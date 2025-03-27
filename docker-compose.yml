@@ -15,7 +15,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   users-service:
-    build: .
+    build: ./usersService
     container_name: users-service
     ports:
       - "8000:8000"
