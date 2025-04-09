@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.itaParkingSystem.parkingService";
+option java_outer_classname = "ParkingServiceProto";
+
+package parking;
+
+service ParkingService {
+    rpc GetAvailableSpots (Empty) returns (AvailableSpotsResponse);
+    rpc ReserveSpot (ParkingSpotRequest) returns (Empty);
+    rpc CancelReservation (ParkingSpotRequest) returns (Empty);
+    rpc OccupySpot (ParkingSpotRequest) returns (Empty);
+    rpc FreeSpot (ParkingSpotRequest) returns (Empty);
+    rpc GetAllSpots (Empty) returns (AllSpotsResponse);
+
+}
+
+message ParkingSpot {
+    string id = 1;
+    bool reserved = 2;
+    bool occupied = 3;
+}
+
+message ParkingSpotRequest {
+    string spot_id = 1;
+}
+
+message AvailableSpotsResponse {
+    repeated ParkingSpot available_spots = 1;
+}
+
+message AllSpotsResponse {
+    repeated ParkingSpot all_spots = 1;
+}
+
+message Empty {}
