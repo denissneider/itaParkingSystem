@@ -13,7 +13,8 @@ service ParkingService {
     rpc OccupySpot (ParkingSpotRequest) returns (Empty);
     rpc FreeSpot (ParkingSpotRequest) returns (Empty);
     rpc GetAllSpots (Empty) returns (AllSpotsResponse);
-
+    rpc AddSpot (ParkingSpot) returns (Empty);
+    rpc RemoveSpot (SpotIdRequest) returns (Empty); // <-- corrected here
 }
 
 message ParkingSpot {
@@ -23,6 +24,10 @@ message ParkingSpot {
 }
 
 message ParkingSpotRequest {
+    string spot_id = 1;
+}
+
+message SpotIdRequest { // <-- you must add this
     string spot_id = 1;
 }
 
