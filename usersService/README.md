@@ -1,8 +1,8 @@
-🧑‍💻 Users Service – FastAPI Microservice
+# 🧑‍💻 Users Service – FastAPI Microservice
 
 To je mikrostoritev za upravljanje uporabnikov v aplikaciji itaParkingSystem. Uporablja FastAPI kot ogrodje, PostgreSQL za bazo podatkov ter je pripravljena za zagon v Dockerju.
 
-Tehnologije
+## Tehnologije
 	•	Python 3.11
 	•	FastAPI
 	•	PostgreSQL
