@@ -1,0 +1,52 @@
+name: PaymentService Tests
+
+on:
+  push:
+    paths:
+      - 'paymentService/**'
+  pull_request:
+    paths:
+      - 'paymentService/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: paymentService
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: payment_db
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5434
+          DB_USERNAME: user
+          DB_PASSWORD: password
+          DB_NAME: payment_db
+        run: npm run test

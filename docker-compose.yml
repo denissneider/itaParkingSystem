@@ -36,7 +36,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: parking_db
     ports:
-      - "5433:5432"  # (5432 inside container, 5433 outside on your localhost)
+      - "5433:5432"  # 5432 inside container, 5433 outside on your localhost
     volumes:
       - parking_pgdata:/var/lib/postgresql/data
 
@@ -56,6 +56,49 @@ services:
     depends_on:
       - parking-db
 
+  # paymentService DB
+  payment-db:
+    image: postgres
+    container_name: payment-db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: payment_db
+    ports:
+      - "5434:5432"  # 5432 inside container, 5434 outside on your localhost
+    volumes:
+      - payment_pgdata:/var/lib/postgresql/data
+
+  # RabbitMQ for messaging
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     
+      - "15672:15672"   
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # paymentService app
+  payment-service:
+    build: ./paymentService
+    container_name: payment-service
+    depends_on:
+      - payment-db
+      - rabbitmq
+    ports:
+      - "3000:3000"
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5672
+      DB_HOST: payment-db
+      DB_PORT: 5432
+      DB_USERNAME: user
+      DB_PASSWORD: password
+      DB_NAME: payment_db
+
 volumes:
   pgdata:
   parking_pgdata:
+  payment_pgdata:
