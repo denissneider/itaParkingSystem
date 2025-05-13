@@ -1,9 +1,9 @@
-// test/payment.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaymentService } from '../src/payment/payment.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Card } from '../src/entities/card.entity';
 import { Repository, DeleteResult } from 'typeorm';
+import { Logger } from '@nestjs/common';
 
 describe('PaymentService', () => {
   let service: PaymentService;
@@ -30,7 +30,7 @@ describe('PaymentService', () => {
   });
 
   it('should log success if payment matches saved card', async () => {
-    const spy = jest.spyOn(console, 'log').mockImplementation();
+    const spy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
 
     cardRepo.findOne.mockResolvedValue({
       userId: 1,
@@ -56,7 +56,7 @@ describe('PaymentService', () => {
   });
 
   it('should save a new card', async () => {
-    const spy = jest.spyOn(console, 'log').mockImplementation();
+    const spy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
     cardRepo.create.mockReturnValue({} as Card);
 
     await service.handleAddCard({
@@ -74,7 +74,7 @@ describe('PaymentService', () => {
   });
 
   it('should delete a card', async () => {
-    const spy = jest.spyOn(console, 'log').mockImplementation();
+    const spy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
     cardRepo.delete.mockResolvedValue({ affected: 1 } as DeleteResult);
 
     await service.handleRemoveCard({ userId: 2 });
