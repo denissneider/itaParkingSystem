@@ -1,3 +1,92 @@
+# 💳 PaymentService
+
+Mikrostoritev znotraj informacijskega sistema **itaParkingSystem**, ki skrbi za obdelavo plačil in upravljanje bančnih kartic uporabnikov.
+
+## ✅ Glavne funkcionalnosti
+
+- Sprejme dogodke prek RabbitMQ:
+  - `add_card` – dodajanje kartice v bazo
+  - `remove_card` – odstranjevanje kartice
+  - `payment_queue` – preverjanje kartičnih podatkov in beleženje uspešnosti plačila
+- Podatke shranjuje v lastno PostgreSQL bazo (Docker)
+- Implementirano z uporabo:
+  - NestJS + TypeScript
+  - TypeORM
+  - RabbitMQ (EventPattern)
+  - PostgreSQL (v Dockerju)
+  - Unit testi z Jest
+
+# TESIRANJE DELOVANJA
+## 1. Dodaj kartico
+{
+  "pattern": "add_card",
+  "data": {
+    "userId": 1,
+    "ime": "Denis Šneider",
+    "stevilka_kartice": "4111111111111111",
+    "cvc": "123",
+    "veljavnost": "12/26"
+  }
+}
+
+## 2. Uspešno plačilo
+{
+  "pattern": "payment_queue",
+  "data": {
+    "userId": 1,
+    "reservationId": "RES-001",
+    "amount": 10.0,
+    "stevilka_kartice": "4111111111111111",
+    "cvc": "123",
+    "veljavnost": "12/26"
+  }
+}
+
+## 3. Neuspešno plačilo
+{
+  "pattern": "payment_queue",
+  "data": {
+    "userId": 1,
+    "reservationId": "RES-002",
+    "amount": 10.0,
+    "stevilka_kartice": "4111111111111111",
+    "cvc": "999",
+    "veljavnost": "12/26"
+  }
+}
+
+## 4. Neuspešno plačilo – uporabnik nima kartice
+{
+  "pattern": "payment_queue",
+  "data": {
+    "userId": 2,
+    "reservationId": "RES-003",
+    "amount": 10.0,
+    "stevilka_kartice": "4000000000000000",
+    "cvc": "123",
+    "veljavnost": "01/25"
+  }
+}
+
+## 5. Odstrani kartico
+{
+  "pattern": "remove_card",
+  "data": {
+    "userId": 1
+  }
+}
+
+## 6. Dodaj kartico – manjkajo podatki
+{
+  "pattern": "add_card",
+  "data": {
+    "userId": 1,
+    "ime": "Denis Šneider",
+    "stevilka_kartice": "4111111111111111"
+    // manjkajo cvc in veljavnost
+  }
+}
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
@@ -20,6 +109,8 @@
 </p>
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+
+
 
 ## Description
 
