@@ -4,6 +4,8 @@ from passlib.context import CryptContext
 from uuid import UUID
 from app import user_schemas as schemas, models, database
 import logging
+from .models import AuditLog
+from .database import SessionLocal
 
 # Configure logging
 logging.basicConfig(
@@ -44,6 +46,21 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+
+    audit = AuditLog(
+        action="create_user",
+        user_id=db_user.id,
+        changed_by="jaz_hehe",
+        details={
+            "created_user": {
+                "name": db_user.name,
+                "email": db_user.email
+            }
+        }
+    )
+    db.add(audit)
+    db.commit()
+
     logger.info(f"User created with ID: {db_user.id}")
     return db_user
 
@@ -55,6 +72,19 @@ def delete_user(user_id: UUID, db: Session = Depends(get_db)):
     if not user:
         logger.warning(f"User with ID {user_id} not found")
         raise HTTPException(status_code=404, detail="User not found")
+
+    # Revizijski zapis
+    audit = AuditLog(
+        action="delete_user",
+        user_id=user.id,
+        changed_by="jaz_hehe",
+        details={"deleted_user": {
+            "name": user.name,
+            "email": user.email
+        }}
+    )
+    db.add(audit)
+
     db.delete(user)
     db.commit()
     logger.info(f"User with ID {user_id} successfully deleted")
@@ -66,4 +96,14 @@ def get_users(db: Session = Depends(get_db)):
     logger.info("Fetching all users")
     logger.info(f"GET /users called")
     users = db.query(models.User).all()
+
+    audit = AuditLog(
+        action="get_users",
+        user_id="N/A",
+        changed_by="jaz_hehe",
+        details={"info": "User list fetched"}
+    )
+    db.add(audit)
+    db.commit()
+
     return users
