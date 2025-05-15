@@ -43,3 +43,15 @@ Aplikacija bo dostopna na:
 
 Swagger dokumentacija:
 	•	http://localhost:8000/docs
+
+
+## Dodatno
+Pri nalogi Vzorci MSA dodano audit logging (revizijsko beleženje) in integracija z datadogom za telemetrijo aplikacije.
+
+Za dostop do baze users-db in preverjanja audit_logov ->
+Terminal -> 
+>
+docker exec -it users-db psql -U user -d users_db
+>
+select * from audit_log
+;
